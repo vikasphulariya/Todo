@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, TextInput, Image,TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Image ,ScrollView} from 'react-native'
 import FastImage from 'react-native-fast-image'
 import React from 'react'
 
-const Login = ({navigation}) => {
+const SignUp = ({navigation}) => {
     return (
         <View style={{ backgroundColor: "#212832", flex: 1, alignContent: 'center', alignItems: 'center' }}>
             <Image
@@ -10,15 +10,22 @@ const Login = ({navigation}) => {
                     require('../Assets/Icon.png')
                 }
                 style={{
-                    width: 80,
-                    height: "auto",
+                    width: "auto",
+                    height: "8%",
                     aspectRatio: (2512 / 2048),
                     marginTop: "4%",
 
                 }} />
             <Text style={styles.Title} >Your Daily <Text style={{ color: "#2E93EA", fontWeight: '700' }}>Toddler </Text></Text>
+
+            <ScrollView style={{width:'100%',marginLeft:"10%"}}>
             <View style={{ alignItems: 'flex-start', width: '90%' }}>
-                <Text style={styles.Title}>Welcome Back!</Text>
+                <Text style={styles.Title}>Create Your Account</Text>
+                <Text style={styles.Entries}>Full Name</Text>
+                <TextInput
+                    style={styles.inputBox}
+                    placeholderTextColor={"#c0c0c0"}
+                    placeholder='Your Full Name'></TextInput>
                 <Text style={styles.Entries}>Email Address</Text>
                 <TextInput
                     style={styles.inputBox}
@@ -29,24 +36,22 @@ const Login = ({navigation}) => {
                     style={styles.inputBox}
                     placeholderTextColor={"#c0c0c0"}
                     placeholder='Your Password'></TextInput>
-                <Text style={[{ alignSelf: "flex-end", marginTop: '-3%', color: "#8CAAB9", fontSize: 16 }]}>Forget Password?</Text>
-                <TouchableOpacity style={{width:'100%'}}>
-
-                <Text style={styles.lgnBtn}>Login</Text>
-                </TouchableOpacity>
+                {/* <Text style={[{ alignSelf: "flex-end", marginTop: '-3%', color: "#8CAAB9", fontSize: 16 }]}>Forget Password?</Text> */}
+                <Text adjustsFontSizeToFit={true} allowFontScaling style={styles.lgnBtn}>Sign Up</Text>
                 <Text style={[styles.Entries, { alignSelf: 'center', marginBottom: "4.5%" }]}>---- Or Continue with ----</Text>
                 <Text style={styles.googleBtn}>Google</Text>
-                <Text style={[styles.Entries, { alignSelf: 'center' }]}>Don't have a account? <Text 
-                style={{ color: "#2E93EA", fontWeight: '700' }}
+                <Text style={[styles.Entries, { alignSelf: 'center' }]}>Already have a account? <Text
                 onPress={()=>{
-                    navigation.replace("SignUp")}}
-                >Sign Up</Text></Text>
+                    navigation.replace("Login")
+                }} style={{ color: "#2E93EA", fontWeight: '700' }}>Log In</Text></Text>
             </View>
+                    </ScrollView>
+
         </View>
     )
 }
 
-export default Login
+export default SignUp
 
 const styles = StyleSheet.create({
     Title: {
@@ -57,7 +62,7 @@ const styles = StyleSheet.create({
     },
     Entries: {
         color: "#8CAAB9",
-        marginTop: "4%",
+        marginTop: "2%",
         marginBottom: "1%",
         fontSize: 16
     },
@@ -65,7 +70,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#455A64",
         width: "100%",
         marginTop: "1%",
-        marginBottom: "4%",
+        marginBottom: "3%",
         borderRadius: 2,
         elevation: 4,
         paddingHorizontal: "3%"
@@ -87,13 +92,13 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
         borderWidth: 2,
         borderRadius: 2,
-        marginTop: 15,
+        marginTop: "6%",
         width: '100%',
         textAlign: 'center',
         color: '#fff',
         fontWeight: "900",
         fontSize: 18,
         padding: 10,
-        marginVertical: "10%"
+        marginVertical: "8%"
     }
 })

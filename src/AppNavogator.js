@@ -5,22 +5,20 @@ import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './HomeLogin.js/Login';
-function HomeScreen() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-    </View>
-  );
-}
-
+import SignUp from './HomeLogin.js/Signup'
+import Home from './Home/home';
+import DashBoard from './DashBoard';
 const Stack = createNativeStackNavigator();
 
 function AppNavigator() {
   return (
     <NavigationContainer >
       <Stack.Navigator options={{statusBarColor:"red"}} >
+        <Stack.Screen  name="DashBoard" component={DashBoard} options={{headerShown:false,statusBarColor:"#212832"}} />
+        <Stack.Screen name="Home" component={Home} options={{headerShown:false,statusBarColor:"#212832"}}/>
+        <Stack.Screen  name="SignUp" component={SignUp} options={{headerShown:false,statusBarColor:"#212832"}} />
         <Stack.Screen  name="Login" component={Login} options={{headerShown:false,statusBarColor:"#212832"}} />
-        <Stack.Screen name="Home" component={HomeScreen} />
+        
       </Stack.Navigator>
 
     </NavigationContainer>
