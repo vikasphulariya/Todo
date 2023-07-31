@@ -38,10 +38,10 @@ const Motivation = () => {
     getQoutes();
   }, [isFocused]);
   const getQoutes = async () => {
-    // const result = await fetch('https://zenquotes.io/api/random/[your_key]');
-    // let json = await result.json();
-    // console.log(json[0].q, json[0].a);
-    // setQoute(json[0]);
+    const result = await fetch('https://zenquotes.io/api/random/[your_key]');
+    let json = await result.json();
+    console.log(json[0].q, json[0].a);
+    setQoute(json[0]);
   };
   return (
     <View style={styles.container}>
@@ -60,11 +60,13 @@ const Motivation = () => {
             textDecorationStyle: 'dotted',
           }}>
           ❝{' '}
-          <Text
+          <Text selectable={true}
             style={{
               textAlign: 'justify',
               fontSize: 22,
               fontStyle: 'italic',
+              fontWeight:'800',
+              
               // textalignLast: 'centre',
             }}>
             {qoute.q}
@@ -102,19 +104,19 @@ const styles = StyleSheet.create({
     height: 50,
     width: 'auto',
     aspectRatio: 1,
-    alignSelf:'center'
+    alignSelf: 'center',
   },
   refreshBtn: {
     elevation: 10,
-    padding:1,
+    padding: 1,
     backgroundColor: theme.actionColor,
     width: 52,
     borderRadius: 30,
     position: 'absolute',
     bottom: 120,
     right: 30,
-    alignItems:'center',
-    justifyContent:'center',
-    alignContent:'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
   },
 });
