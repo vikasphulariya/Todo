@@ -9,6 +9,7 @@ import Header from './Helper/Header';
 import Motivation from './Home/Motivation';
 import Trash from './Home/Trash';
 import History from './Home/History';
+import Completed from './Home/completed';
 import {useIsFocused} from '@react-navigation/native';
 const add = Home;
 const theme = Darkcolors;
@@ -23,7 +24,7 @@ const DashBoard = ({navigation}) => {
       {MenuChosen === 1 ? <Home /> : null}
       {MenuChosen === 2 ? <Motivation /> : null}
       {MenuChosen === 3 ? <Trash /> : null}
-      {MenuChosen === 4 ? <History /> : null}
+      {MenuChosen === 4 ? <Completed /> : null}
       <View style={styles.Footer}>
         <TouchableOpacity onPress={() => setMenuChosen(1)}>
           <View style={{}}>

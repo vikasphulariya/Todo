@@ -7,10 +7,64 @@ import List from '../Helper/listItem';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import {useIsFocused} from '@react-navigation/native';
+import Snackbar from 'react-native-snackbar';
 const theme = Darkcolors;
 const Home = () => {
   const temp = () => {
     console.log('csdc');
+  };
+
+  const markTrash = id => {
+    firestore()
+      .collection('Users')
+      .doc(auth().currentUser.email)
+      .collection('Tasks')
+      .doc(id)
+      .update({
+        Location: 'Trash',
+        lastLocation: 'Active',
+      })
+      .then(() => {
+        getData();
+        console.log('Task Deleted');
+        Snackbar.show({
+          text: 'Moved To Trash',
+          duration: 500,
+          action: {
+            text: 'OK',
+            textColor: 'green',
+            onPress: () => {
+              // navigation.replace('Login');
+            },
+          },
+        });
+      });
+  };
+  const markComplete = (id, lastLocation) => {
+    firestore()
+      .collection('Users')
+      .doc(auth().currentUser.email)
+      .collection('Tasks')
+      .doc(id)
+      .update({
+        Location: 'Completed',
+        lastLocation: 'Active',
+      })
+      .then(() => {
+        getData();
+        console.log('Task Deleted');
+        Snackbar.show({
+          text: 'Moved To Completed',
+          duration: 500,
+          action: {
+            text: 'OK',
+            textColor: 'green',
+            onPress: () => {
+              // navigation.replace('Login');
+            },
+          },
+        });
+      });
   };
   const isFocused = useIsFocused();
   useEffect(() => {
@@ -33,15 +87,15 @@ const Home = () => {
         let meduim = [];
         result.forEach(task => {
           // console.log(task.data().priority)
-          if (task.data().priority == 3) {
+          if (task.data().priority == 3 && task.data().Location === 'Active') {
             // console.log(task.data().Title);
             low.push({id: task.id, Data: task.data()});
           }
-          if (task.data().priority == 2) {
+          if (task.data().priority == 2 && task.data().Location === 'Active') {
             // console.log(task.data().Title);
             meduim.push({id: task.id, Data: task.data()});
           }
-          if (task.data().priority == 1) {
+          if (task.data().priority == 1 && task.data().Location === 'Active') {
             // console.log(task.data().Title);
             high.push({id: task.id, Data: task.data()});
           }
@@ -87,13 +141,17 @@ const Home = () => {
             <Text style={{fontWeight: '700', fontSize: 17}}>High Priority</Text>
             <Text style={{fontWeight: '700', fontSize: 17}}>Time:</Text>
           </View>
-          {/* <List /> */}
-          {/* <List /> */}
           <FlatList
             scrollEnabled
             data={highTasks}
             renderItem={task => {
-              return <List data={task.item} refresh={getData} temp={temp} />;
+              return (
+                <List
+                  data={task.item}
+                  delete={markTrash}
+                  complete={markComplete}
+                />
+              );
             }}
           />
         </View>
@@ -115,7 +173,13 @@ const Home = () => {
             scrollEnabled
             data={meduimTasks}
             renderItem={task => {
-              return <List data={task.item} refresh={getData} temp={temp} />;
+              return (
+                <List
+                  data={task.item}
+                  delete={markTrash}
+                  complete={markComplete}
+                />
+              );
             }}
           />
         </View>
@@ -128,9 +192,7 @@ const Home = () => {
               justifyContent: 'space-between',
               paddingHorizontal: 10,
             }}>
-            <Text style={{fontWeight: '700', fontSize: 17}}>
-              Meduim Priority
-            </Text>
+            <Text style={{fontWeight: '700', fontSize: 17}}>Low Priority</Text>
             <Text style={{fontWeight: '700', fontSize: 17}}>Time:</Text>
           </View>
 
@@ -138,7 +200,13 @@ const Home = () => {
             scrollEnabled
             data={lowTasks}
             renderItem={task => {
-              return <List data={task.item} refresh={getData} temp={temp} />;
+              return (
+                <List
+                  data={task.item}
+                  delete={markTrash}
+                  complete={markComplete}
+                />
+              );
             }}
           />
         </View>

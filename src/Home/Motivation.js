@@ -1,47 +1,68 @@
 /* eslint-disable react-native/no-inline-styles */
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Image,
-  Touchable,
-  TouchableOpacity,
-} from 'react-native';
-import React, {useState, useEffect, useRef} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import {useIsFocused} from '@react-navigation/native';
 import {Darkcolors} from '../Helper/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const theme = Darkcolors;
 const Motivation = () => {
+  const isFocused = useIsFocused();
+  const [qoute, setQoute] = useState({
+    q: '',
+    a: '',
+  });
+
+  const [author, setAuthor] = useState('');
   const [HeaderHeight, setHeaderHeight] = useState(80);
+
   const getData = async () => {
     try {
-      console.log('csf');
+      console.log('Get Data Ran');
       const value = await AsyncStorage.getItem('HeaderHeight');
+      const qoute = await AsyncStorage.getItem('Qoute');
       if (value !== null) {
-        console.log(value);
+        // console.log(value);
         setHeaderHeight(parseInt(value));
       } else {
         console.log('aeffa');
       }
+      if (qoute !== null) {
+        setQoute(JSON.parse(qoute));
+      } else {
+        setQoute({
+          q: 'The wise accomplish all that they want without arousing the envy or scorn of others.',
+          a: 'Ming-Dao Deng',
+        });
+
+        getQoutes();
+      }
     } catch (e) {
       // error reading value
+      console.log(e);
     }
   };
-  const isFocused = useIsFocused();
-  const [qoute, setQoute] = useState('');
-  const [author, setAuthor] = useState('');
+  const setData = async value => {
+    try {
+      // console.log(value);
+      const jsonValue = JSON.stringify(value);
+
+      const qoute = await AsyncStorage.setItem('Qoute', jsonValue);
+      console.log('Qoute Saved');
+    } catch (e) {
+      // error reading value
+      console.log(e);
+    }
+  };
   useEffect(() => {
     getData();
-    getQoutes();
   }, [isFocused]);
   const getQoutes = async () => {
     const result = await fetch('https://zenquotes.io/api/random/[your_key]');
     let json = await result.json();
+    console.log('Get Qoutes Ran');
     console.log(json[0].q, json[0].a);
     setQoute(json[0]);
+    setData(json[0]);
   };
   return (
     <View style={styles.container}>
@@ -60,13 +81,14 @@ const Motivation = () => {
             textDecorationStyle: 'dotted',
           }}>
           ❝{' '}
-          <Text selectable={true}
+          <Text
+            selectable={true}
             style={{
               textAlign: 'justify',
               fontSize: 22,
               fontStyle: 'italic',
-              fontWeight:'800',
-              
+              fontWeight: '800',
+
               // textalignLast: 'centre',
             }}>
             {qoute.q}

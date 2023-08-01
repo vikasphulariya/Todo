@@ -15,11 +15,18 @@ import auth from '@react-native-firebase/auth';
 import Snackbar from 'react-native-snackbar';
 const theme = Darkcolors;
 const List = (props, {refresh, temp}) => {
+  let k = 'done';
+  const imgae = require(`../Assets/${k}.png`);
+  const [imageIcon, setImageIcon] = useState(require(`../Assets/${k}.png`));
   const [dataK, setData] = useState('');
   const [idK, setid] = useState('');
 
   useEffect(() => {
     if (props.data) {
+      console.log(props.from)
+      if(props.from=='Trash' || props.from=="Completed"){
+        setImageIcon(require(`../Assets/reverse.png`))
+      }
       console.log(props.data.Data);
       const data = props.data.Data;
       const id = props.data.id;
@@ -33,7 +40,7 @@ const List = (props, {refresh, temp}) => {
         <Text style={styles.textEntry}>{dataK.Title}</Text>
         <TouchableOpacity
           onPress={() => {
-            props.temp();
+            props.complete(idK);
           }}>
           <Image
             style={{
@@ -43,7 +50,7 @@ const List = (props, {refresh, temp}) => {
               backgroundColor: theme.actionColor,
               borderRadius: 3,
             }}
-            source={require('../Assets/done.png')}
+            source={imageIcon}
           />
         </TouchableOpacity>
         <TouchableOpacity
@@ -53,27 +60,7 @@ const List = (props, {refresh, temp}) => {
             borderRadius: 3,
           }}
           onPress={() => {
-            firestore()
-              .collection('Users')
-              .doc(auth().currentUser.email)
-              .collection('Tasks')
-              .doc(idK)
-              .delete()
-              .then(() => {
-                props.refresh();
-                console.log('User deleted!');
-                Snackbar.show({
-                  text: 'Todo deleted',
-                  duration: 500,
-                  action: {
-                    text: 'OK',
-                    textColor: 'green',
-                    onPress: () => {
-                      // navigation.replace('Login');
-                    },
-                  },
-                });
-              });
+            props.delete(idK);
           }}>
           <Image
             style={{

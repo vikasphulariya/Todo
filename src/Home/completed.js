@@ -9,10 +9,10 @@ import auth from '@react-native-firebase/auth';
 import {useIsFocused} from '@react-navigation/native';
 import Snackbar from 'react-native-snackbar';
 const theme = Darkcolors;
-const Trash = () => {
-  const [meduimTasks, setMeduimTasks] = useState([]);
-  const [highTasks, setHighTasks] = useState([]);
-  const [lowTasks, setLowTasks] = useState([]);
+const Completed = () => {
+  const temp = () => {
+    console.log('csdc');
+  };
 
   const markTrash = id => {
     firestore()
@@ -20,12 +20,15 @@ const Trash = () => {
       .doc(auth().currentUser.email)
       .collection('Tasks')
       .doc(id)
-      .delete()
+      .update({
+        Location: 'Trash',
+        lastLocation: 'Completed',
+      })
       .then(() => {
         getData();
         console.log('Task Deleted');
         Snackbar.show({
-          text: 'Todo deleted',
+          text: 'Moved To Trash',
           duration: 500,
           action: {
             text: 'OK',
@@ -44,14 +47,14 @@ const Trash = () => {
       .collection('Tasks')
       .doc(id)
       .update({
-        Location: lastLocation,
-        lastLocation: 'Trash',
+        Location: 'Active',
+        lastLocation: 'Completed',
       })
       .then(() => {
         getData();
-        console.log(`Moved to ${lastLocation}`);
+        console.log('Task Deleted');
         Snackbar.show({
-          text: 'Todo deleted',
+          text: "Moved To Todo's",
           duration: 500,
           action: {
             text: 'OK',
@@ -68,8 +71,11 @@ const Trash = () => {
     console.log('cd');
     getData();
   }, [isFocused]);
+  const [meduimTasks, setMeduimTasks] = useState([]);
+  const [highTasks, setHighTasks] = useState([]);
+  const [lowTasks, setLowTasks] = useState([]);
   const getData = () => {
-    // console.log('Trash');
+    // console.log('Completed');
     firestore()
       .collection('Users')
       .doc(auth().currentUser.email)
@@ -81,15 +87,24 @@ const Trash = () => {
         let meduim = [];
         result.forEach(task => {
           // console.log(task.data().priority)
-          if (task.data().priority == 3 && task.data().Location === 'Trash') {
+          if (
+            task.data().priority == 3 &&
+            task.data().Location === 'Completed'
+          ) {
             // console.log(task.data().Title);
             low.push({id: task.id, Data: task.data()});
           }
-          if (task.data().priority == 2 && task.data().Location === 'Trash') {
+          if (
+            task.data().priority == 2 &&
+            task.data().Location === 'Completed'
+          ) {
             // console.log(task.data().Title);
             meduim.push({id: task.id, Data: task.data()});
           }
-          if (task.data().priority == 1 && task.data().Location === 'Trash') {
+          if (
+            task.data().priority == 1 &&
+            task.data().Location === 'Completed'
+          ) {
             // console.log(task.data().Title);
             high.push({id: task.id, Data: task.data()});
           }
@@ -143,8 +158,8 @@ const Trash = () => {
                 <List
                   data={task.item}
                   delete={markTrash}
-                  refresh={getData}
-                  from={'Trash'}
+                  complete={markComplete}
+                  from={'Completed'}
                 />
               );
             }}
@@ -172,8 +187,8 @@ const Trash = () => {
                 <List
                   data={task.item}
                   delete={markTrash}
-                  refresh={getData}
-                  from={'Trash'}
+                  complete={markComplete}
+                  from={'Completed'}
                 />
               );
             }}
@@ -200,8 +215,8 @@ const Trash = () => {
                 <List
                   data={task.item}
                   delete={markTrash}
-                  refresh={getData}
-                  from={'Trash'}
+                  complete={markComplete}
+                  from={'Completed'}
                 />
               );
             }}
@@ -212,13 +227,13 @@ const Trash = () => {
         onPress={() => {
           console.log(highTasks);
         }}>
-        Trash
+        Completed
       </Text> */}
     </View>
   );
 };
 
-export default Trash;
+export default Completed;
 
 const styles = StyleSheet.create({
   HdrWel: {
