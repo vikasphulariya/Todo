@@ -9,59 +9,8 @@ import auth from '@react-native-firebase/auth';
 import {useIsFocused} from '@react-navigation/native';
 import Snackbar from 'react-native-snackbar';
 const theme = Darkcolors;
-const Trash = () => {
-  useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('Users')
-      .doc(auth().currentUser.email)
-      .collection('Tasks')
-      .onSnapshot(onResult, onError);
-
-    return () => unsubscribe();
-  }, []);
-
-  // useEffect(() => {}, [meduimTasks]);
-
-  function onResult(querySnapshot) {
-    console.log('Got Users collection result.');
-
-    getData(querySnapshot);
-  }
-
-  function onError(error) {
-    console.error(error);
-  }
-
-  const [meduimTasks, setMeduimTasks] = useState([]);
-  const [highTasks, setHighTasks] = useState([]);
-  const [lowTasks, setLowTasks] = useState([]);
-  const getData = result => {
-    console.log('Home');
-
-    let low = [];
-    let high = [];
-    let meduim = [];
-    result.forEach(task => {
-      // console.log(task.data().priority)
-      if (task.data().priority == 3 && task.data().Location === 'Trash') {
-        // console.log(task.data().Title);
-        low.push({id: task.id, Data: task.data()});
-        // setLowTasks([...lowTasks, {id: task.id, Data: task.data()}]);
-      }
-      if (task.data().priority == 2 && task.data().Location === 'Trash') {
-        console.log(task.data().Title);
-        meduim.push({id: task.id, Data: task.data()});
-      }
-      if (task.data().priority == 1 && task.data().Location === 'Trash') {
-        // console.log(task.data().Title);
-        high.push({id: task.id, Data: task.data()});
-      }
-    });
-    console.log('Update Completed');
-    setHighTasks(high);
-    setLowTasks(low);
-    setMeduimTasks(meduim);
-  };
+const Temp = props => {
+  const [, forceUpdate] = useState();
 
   const markTrash = id => {
     firestore()
@@ -69,12 +18,15 @@ const Trash = () => {
       .doc(auth().currentUser.email)
       .collection('Tasks')
       .doc(id)
-      .delete()
+      .update({
+        Location: 'Trash',
+        lastLocation: 'Active',
+      })
       .then(() => {
-        getData();
+        // getData();    
         console.log('Task Deleted');
         Snackbar.show({
-          text: 'Todo deleted',
+          text: 'Moved To Trash',
           duration: 500,
           action: {
             text: 'OK',
@@ -87,40 +39,39 @@ const Trash = () => {
       });
   };
   const markComplete = (id, lastLocation) => {
-    console.log('dd', lastLocation);
-    try {
-      firestore()
-        .collection('Users')
-        .doc(auth().currentUser.email)
-        .collection('Tasks')
-        .doc(id)
-        .update({
-          Location: lastLocation,
-          lastLocation: 'Trash',
-        })
-        .then(() => {
-          // getData();
-          console.log(`Moved to ${lastLocation}`);
-          Snackbar.show({
-            text: 'Todo deleted',
-            duration: 500,
-            action: {
-              text: 'OK',
-              textColor: 'green',
-              onPress: () => {
-                // navigation.replace('Login');
-              },
+    firestore()
+      .collection('Users')
+      .doc(auth().currentUser.email)
+      .collection('Tasks')
+      .doc(id)
+      .update({
+        Location: 'Completed',
+        lastLocation: 'Active',
+      })
+      .then(() => {
+        console.log('Task Deleted');
+        Snackbar.show({
+          text: 'Moved To Completed',
+          duration: 500,
+          action: {
+            text: 'OK',
+            textColor: 'green',
+            onPress: () => {
+              // navigation.replace('Login');
             },
-          });
-        })
-        .catch(e => {
-          console.log(`Failed to`, e);
+          },
         });
-    } catch (e) {
-      console.log(e);
-    }
+      });
   };
-  const isFocused = useIsFocused();
+
+  const [meduimTasks, setMeduimTasks] = useState([]);
+  const [highTasks, setHighTasks] = useState([]);
+  const [lowTasks, setLowTasks] = useState([]);
+
+  useEffect(() => {
+    console.log(props.data);
+    setLowTasks(props.data);
+  }, [props.data]);
   return (
     <View style={{backgroundColor: theme.primaryBGColor, flex: 1}}>
       <View style={styles.searchHeader}>
@@ -146,6 +97,7 @@ const Trash = () => {
           />
         </View>
       </View>
+      <Text>bbb</Text>
       {highTasks.length === 0 ? null : (
         <View style={[styles.TaskItems, {borderColor: 'red'}]}>
           <View
@@ -166,14 +118,13 @@ const Trash = () => {
                   data={task.item}
                   delete={markTrash}
                   complete={markComplete}
-                  from={'Trash'}
                 />
               );
             }}
           />
         </View>
       )}
-      {meduimTasks.length === 0 ? null : (
+      {lowTasks.length === 0 ? null : (
         <View style={[styles.TaskItems, {borderColor: 'orange'}]}>
           <View
             style={{
@@ -181,22 +132,31 @@ const Trash = () => {
               justifyContent: 'space-between',
               paddingHorizontal: 10,
             }}>
-            <Text style={{fontWeight: '700', fontSize: 17}}>
+            <Text
+              onPress={() => {
+                forceUpdate();
+                console.log('dger');
+              }}
+              style={{fontWeight: '700', fontSize: 17}}>
               Meduim Priority
             </Text>
             <Text style={{fontWeight: '700', fontSize: 17}}>Time:</Text>
           </View>
           <FlatList
             scrollEnabled
-            data={meduimTasks}
+            data={lowTasks}
             renderItem={task => {
+              // console.log(task.item.Data.Title);
               return (
-                <List
-                  data={task.item}
-                  delete={markTrash}
-                  complete={markComplete}
-                  from={'Trash'}
-                />
+                <View>
+                  {/* <Text>{task.item.Data.Title}</Text> */}
+
+                  <List
+                    data={task.item}
+                    delete={markTrash}
+                    complete={markComplete}
+                  />
+                </View>
               );
             }}
           />
@@ -219,12 +179,15 @@ const Trash = () => {
             data={lowTasks}
             renderItem={task => {
               return (
-                <List
-                  data={task.item}
-                  delete={markTrash}
-                  complete={markComplete}
-                  from={'Trash'}
-                />
+                <View>
+                  {task.item.Data.Location == 'Active' ? (
+                    <List
+                      data={task.item}
+                      delete={markTrash}
+                      complete={markComplete}
+                    />
+                  ) : null}
+                </View>
               );
             }}
           />
@@ -234,13 +197,13 @@ const Trash = () => {
         onPress={() => {
           console.log(highTasks);
         }}>
-        Trash
+        Temp
       </Text> */}
     </View>
   );
 };
 
-export default Trash;
+export default Temp;
 
 const styles = StyleSheet.create({
   HdrWel: {

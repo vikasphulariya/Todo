@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Darkcolors} from './Helper/colors';
 import {Lightcolors} from './Helper/colors';
 import FastImage from 'react-native-fast-image';
@@ -11,12 +11,65 @@ import Trash from './Home/Trash';
 import History from './Home/History';
 import Completed from './Home/completed';
 import {useIsFocused} from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import Temp from './Home/temp';
+// import {useIsFocused} from '@react-navigation/native';
 const add = Home;
 const theme = Darkcolors;
 const DashBoard = ({navigation}) => {
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    const unsubscribe = firestore()
+      .collection('Users')
+      .doc('vikasphulariya@gmail.com')
+      .collection('Tasks')
+      .onSnapshot(onResult, onError);
 
-  const isFocused=useIsFocused();
+    return () => unsubscribe();
+  }, [meduimTasks, lowTasks, highTasks]);
 
+  function onResult(querySnapshot) {
+    console.log('Got Users collection result.');
+
+    getData(querySnapshot);
+  }
+
+  function onError(error) {
+    console.error(error);
+  }
+
+  const [meduimTasks, setMeduimTasks] = useState([]);
+  const [highTasks, setHighTasks] = useState([]);
+  const [lowTasks, setLowTasks] = useState([]);
+  const getData = result => {
+    console.log('Home');
+
+    let low = [];
+    let meduim = [];
+    let high = [];
+    result.forEach(task => {
+      // console.log(task.data().priority)
+      if (task.data().priority == 3) {
+        // console.log(task.data().Title);
+        low.push({id: task.id, Data: task.data()});
+        // setLowTasks([...lowTasks, {id: task.id, Data: task.data()}]);
+      }
+      if (task.data().priority == 2) {
+        console.log(task.data().Title);
+        meduim.push({id: task.id, Data: task.data()});
+      }
+      if (task.data().priority == 1) {
+        // console.log(task.data().Title);
+        high.push({id: task.id, Data: task.data()});
+      }
+    });
+    console.log('Update Completed',low);
+    setLowTasks(low);
+    setMeduimTasks(meduim);
+    setHighTasks(high);
+    // console.log('Update Completed');
+  };
   const [MenuChosen, setMenuChosen] = useState(1);
   return (
     <View style={{flex: 1, backgroundColor: theme.primaryBGColor}}>
@@ -24,6 +77,7 @@ const DashBoard = ({navigation}) => {
       {MenuChosen === 1 ? <Home /> : null}
       {MenuChosen === 2 ? <Motivation /> : null}
       {MenuChosen === 3 ? <Trash /> : null}
+      {MenuChosen === 5 ? <Temp data={lowTasks} /> : null}
       {MenuChosen === 4 ? <Completed /> : null}
       <View style={styles.Footer}>
         <TouchableOpacity onPress={() => setMenuChosen(1)}>
@@ -67,7 +121,8 @@ const DashBoard = ({navigation}) => {
 
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('newTask');
+            // navigation.navigate('newTask');
+            setMenuChosen(5)
           }}
           style={{borderRadius: 4, paddingHorizontal: -1}}>
           <Image

@@ -13,6 +13,7 @@ const Home = () => {
   const temp = () => {
     console.log('csdc');
   };
+  const [, forceUpdate] = useState();
 
   const markTrash = id => {
     firestore()
@@ -25,7 +26,7 @@ const Home = () => {
         lastLocation: 'Active',
       })
       .then(() => {
-        getData();
+        // getData();
         console.log('Task Deleted');
         Snackbar.show({
           text: 'Moved To Trash',
@@ -51,7 +52,7 @@ const Home = () => {
         lastLocation: 'Active',
       })
       .then(() => {
-        getData();
+        // getData();
         console.log('Task Deleted');
         Snackbar.show({
           text: 'Moved To Completed',
@@ -68,42 +69,56 @@ const Home = () => {
   };
   const isFocused = useIsFocused();
   useEffect(() => {
-    console.log('cd');
-    getData();
-  }, [isFocused]);
-  const [meduimTasks, setMeduimTasks] = useState([]);
-  const [highTasks, setHighTasks] = useState([]);
-  const [lowTasks, setLowTasks] = useState([]);
-  const getData = () => {
-    // console.log('Home');
-    firestore()
+    const unsubscribe = firestore()
       .collection('Users')
       .doc(auth().currentUser.email)
       .collection('Tasks')
-      .get()
-      .then(result => {
-        let low = [];
-        let high = [];
-        let meduim = [];
-        result.forEach(task => {
-          // console.log(task.data().priority)
-          if (task.data().priority == 3 && task.data().Location === 'Active') {
-            // console.log(task.data().Title);
-            low.push({id: task.id, Data: task.data()});
-          }
-          if (task.data().priority == 2 && task.data().Location === 'Active') {
-            // console.log(task.data().Title);
-            meduim.push({id: task.id, Data: task.data()});
-          }
-          if (task.data().priority == 1 && task.data().Location === 'Active') {
-            // console.log(task.data().Title);
-            high.push({id: task.id, Data: task.data()});
-          }
-        });
-        setHighTasks(high);
-        setLowTasks(low);
-        setMeduimTasks(meduim);
-      });
+      .onSnapshot(onResult, onError);
+
+    return () => unsubscribe();
+  }, []);
+
+  // useEffect(() => {}, [meduimTasks]);
+
+  function onResult(querySnapshot) {
+    console.log('Got Users collection result.');
+
+    getData(querySnapshot);
+  }
+
+  function onError(error) {
+    console.error(error);
+  }
+
+  const [meduimTasks, setMeduimTasks] = useState([]);
+  const [highTasks, setHighTasks] = useState([]);
+  const [lowTasks, setLowTasks] = useState([]);
+  const getData = result => {
+    console.log('Home');
+
+    let low = [];
+    let high = [];
+    let meduim = [];
+    result.forEach(task => {
+      // console.log(task.data().priority)
+      if (task.data().priority == 3 && task.data().Location === 'Active') {
+        // console.log(task.data().Title);
+        low.push({id: task.id, Data: task.data()});
+        // setLowTasks([...lowTasks, {id: task.id, Data: task.data()}]);
+      }
+      if (task.data().priority == 2 && task.data().Location === 'Active') {
+        console.log(task.data().Title);
+        meduim.push({id: task.id, Data: task.data()});
+      }
+      if (task.data().priority == 1 && task.data().Location === 'Active') {
+        // console.log(task.data().Title);
+        high.push({id: task.id, Data: task.data()});
+      }
+    });
+    console.log('Update Completed');
+    setHighTasks(high);
+    setLowTasks(low);
+    setMeduimTasks(meduim);
   };
   return (
     <View style={{backgroundColor: theme.primaryBGColor, flex: 1}}>
@@ -164,7 +179,12 @@ const Home = () => {
               justifyContent: 'space-between',
               paddingHorizontal: 10,
             }}>
-            <Text style={{fontWeight: '700', fontSize: 17}}>
+            <Text
+              onPress={() => {
+                forceUpdate();
+                console.log('dger');
+              }}
+              style={{fontWeight: '700', fontSize: 17}}>
               Meduim Priority
             </Text>
             <Text style={{fontWeight: '700', fontSize: 17}}>Time:</Text>
@@ -173,12 +193,17 @@ const Home = () => {
             scrollEnabled
             data={meduimTasks}
             renderItem={task => {
+              // console.log(task.item.Data.Title);
               return (
-                <List
-                  data={task.item}
-                  delete={markTrash}
-                  complete={markComplete}
-                />
+                <View>
+                  {/* <Text>{task.item.Data.Title}</Text> */}
+
+                  <List
+                    data={task.item}
+                    delete={markTrash}
+                    complete={markComplete}
+                  />
+                </View>
               );
             }}
           />

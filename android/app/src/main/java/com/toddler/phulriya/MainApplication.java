@@ -1,4 +1,4 @@
-package com.todo;
+package com.toddler.phulriya;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

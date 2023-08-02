@@ -10,8 +10,6 @@ import {
 import React, {useState, useEffect} from 'react';
 import {Darkcolors} from './colors';
 import {Lightcolors} from './colors';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 import Snackbar from 'react-native-snackbar';
 const theme = Darkcolors;
 const List = (props, {refresh, temp}) => {
@@ -23,24 +21,24 @@ const List = (props, {refresh, temp}) => {
 
   useEffect(() => {
     if (props.data) {
-      console.log(props.from)
-      if(props.from=='Trash' || props.from=="Completed"){
-        setImageIcon(require(`../Assets/reverse.png`))
+      // console.log(props.data)
+      if (props.from == 'Trash' || props.from == 'Completed') {
+        setImageIcon(require(`../Assets/reverse.png`));
       }
-      console.log(props.data.Data);
+      // console.log(props.data.Data);
       const data = props.data.Data;
       const id = props.data.id;
       setData(data);
       setid(id);
     }
-  }, []);
+  }, [props.data]);
   return (
     <View>
       <View style={styles.ListItem}>
         <Text style={styles.textEntry}>{dataK.Title}</Text>
         <TouchableOpacity
           onPress={() => {
-            props.complete(idK);
+            props.complete(idK, dataK.lastLocation);
           }}>
           <Image
             style={{
