@@ -9,12 +9,7 @@ import auth from '@react-native-firebase/auth';
 import {useIsFocused} from '@react-navigation/native';
 import Snackbar from 'react-native-snackbar';
 const theme = Darkcolors;
-const Home = () => {
-  const temp = () => {
-    console.log('csdc');
-  };
-  const [, forceUpdate] = useState();
-
+const Home = props => {
   const markTrash = id => {
     firestore()
       .collection('Users')
@@ -26,7 +21,6 @@ const Home = () => {
         lastLocation: 'Active',
       })
       .then(() => {
-        // getData();
         console.log('Task Deleted');
         Snackbar.show({
           text: 'Moved To Trash',
@@ -67,59 +61,31 @@ const Home = () => {
         });
       });
   };
-  const isFocused = useIsFocused();
-  useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('Users')
-      .doc(auth().currentUser.email)
-      .collection('Tasks')
-      .onSnapshot(onResult, onError);
-
-    return () => unsubscribe();
-  }, []);
-
-  // useEffect(() => {}, [meduimTasks]);
-
-  function onResult(querySnapshot) {
-    console.log('Got Users collection result.');
-
-    getData(querySnapshot);
-  }
-
-  function onError(error) {
-    console.error(error);
-  }
 
   const [meduimTasks, setMeduimTasks] = useState([]);
   const [highTasks, setHighTasks] = useState([]);
   const [lowTasks, setLowTasks] = useState([]);
-  const getData = result => {
-    console.log('Home');
-
+  useEffect(() => {
+    let k = props.data;
     let low = [];
     let high = [];
-    let meduim = [];
-    result.forEach(task => {
-      // console.log(task.data().priority)
-      if (task.data().priority == 3 && task.data().Location === 'Active') {
-        // console.log(task.data().Title);
-        low.push({id: task.id, Data: task.data()});
-        // setLowTasks([...lowTasks, {id: task.id, Data: task.data()}]);
+    let mediumn = [];
+    k.forEach(e => {
+      if (e.Data.priority == 1) {
+        high.push(e);
       }
-      if (task.data().priority == 2 && task.data().Location === 'Active') {
-        console.log(task.data().Title);
-        meduim.push({id: task.id, Data: task.data()});
+      if (e.Data.priority == 2) {
+        mediumn.push(e);
       }
-      if (task.data().priority == 1 && task.data().Location === 'Active') {
-        // console.log(task.data().Title);
-        high.push({id: task.id, Data: task.data()});
+      if (e.Data.priority == 3) {
+        low.push(e);
       }
     });
-    console.log('Update Completed');
+    // console.log(props.data);
     setHighTasks(high);
+    setMeduimTasks(mediumn);
     setLowTasks(low);
-    setMeduimTasks(meduim);
-  };
+  }, [props.data]);
   return (
     <View style={{backgroundColor: theme.primaryBGColor, flex: 1}}>
       <View style={styles.searchHeader}>
@@ -181,7 +147,7 @@ const Home = () => {
             }}>
             <Text
               onPress={() => {
-                forceUpdate();
+                // forceUpdate();
                 console.log('dger');
               }}
               style={{fontWeight: '700', fontSize: 17}}>
@@ -195,15 +161,11 @@ const Home = () => {
             renderItem={task => {
               // console.log(task.item.Data.Title);
               return (
-                <View>
-                  {/* <Text>{task.item.Data.Title}</Text> */}
-
-                  <List
-                    data={task.item}
-                    delete={markTrash}
-                    complete={markComplete}
-                  />
-                </View>
+                <List
+                  data={task.item}
+                  delete={markTrash}
+                  complete={markComplete}
+                />
               );
             }}
           />

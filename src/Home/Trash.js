@@ -9,59 +9,84 @@ import auth from '@react-native-firebase/auth';
 import {useIsFocused} from '@react-navigation/native';
 import Snackbar from 'react-native-snackbar';
 const theme = Darkcolors;
-const Trash = () => {
-  useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('Users')
-      .doc(auth().currentUser.email)
-      .collection('Tasks')
-      .onSnapshot(onResult, onError);
+const Trash = props => {
+  // useEffect(() => {
+  //   const unsubscribe = firestore()
+  //     .collection('Users')
+  //     .doc(auth().currentUser.email)
+  //     .collection('Tasks')
+  //     .onSnapshot(onResult, onError);
 
-    return () => unsubscribe();
-  }, []);
+  //   return () => unsubscribe();
+  // }, []);
 
-  // useEffect(() => {}, [meduimTasks]);
+  // // useEffect(() => {}, [meduimTasks]);
 
-  function onResult(querySnapshot) {
-    console.log('Got Users collection result.');
+  // function onResult(querySnapshot) {
+  //   console.log('Got Users collection result.');
 
-    getData(querySnapshot);
-  }
+  //   getData(querySnapshot);
+  // }
 
-  function onError(error) {
-    console.error(error);
-  }
+  // function onError(error) {
+  //   console.error(error);
+  // }
+
+  // const [meduimTasks, setMeduimTasks] = useState([]);
+  // const [highTasks, setHighTasks] = useState([]);
+  // const [lowTasks, setLowTasks] = useState([]);
+  // const getData = result => {
+  //   console.log('Home');
+
+  //   let low = [];
+  //   let high = [];
+  //   let meduim = [];
+  //   result.forEach(task => {
+  //     // console.log(task.data().priority)
+  //     if (task.data().priority == 3 && task.data().Location === 'Trash') {
+  //       // console.log(task.data().Title);
+  //       low.push({id: task.id, Data: task.data()});
+  //       // setLowTasks([...lowTasks, {id: task.id, Data: task.data()}]);
+  //     }
+  //     if (task.data().priority == 2 && task.data().Location === 'Trash') {
+  //       console.log(task.data().Title);
+  //       meduim.push({id: task.id, Data: task.data()});
+  //     }
+  //     if (task.data().priority == 1 && task.data().Location === 'Trash') {
+  //       // console.log(task.data().Title);
+  //       high.push({id: task.id, Data: task.data()});
+  //     }
+  //   });
+  //   console.log('Update Completed');
+  //   setHighTasks(high);
+  //   setLowTasks(low);
+  //   setMeduimTasks(meduim);
+  // };
 
   const [meduimTasks, setMeduimTasks] = useState([]);
   const [highTasks, setHighTasks] = useState([]);
   const [lowTasks, setLowTasks] = useState([]);
-  const getData = result => {
-    console.log('Home');
-
+  useEffect(() => {
+    let k = props.data;
     let low = [];
     let high = [];
-    let meduim = [];
-    result.forEach(task => {
-      // console.log(task.data().priority)
-      if (task.data().priority == 3 && task.data().Location === 'Trash') {
-        // console.log(task.data().Title);
-        low.push({id: task.id, Data: task.data()});
-        // setLowTasks([...lowTasks, {id: task.id, Data: task.data()}]);
+    let mediumn = [];
+    k.forEach(e => {
+      if (e.Data.priority == 1) {
+        high.push(e);
       }
-      if (task.data().priority == 2 && task.data().Location === 'Trash') {
-        console.log(task.data().Title);
-        meduim.push({id: task.id, Data: task.data()});
+      if (e.Data.priority == 2) {
+        mediumn.push(e);
       }
-      if (task.data().priority == 1 && task.data().Location === 'Trash') {
-        // console.log(task.data().Title);
-        high.push({id: task.id, Data: task.data()});
+      if (e.Data.priority == 3) {
+        low.push(e);
       }
     });
-    console.log('Update Completed');
+    // console.log(props.data);
     setHighTasks(high);
+    setMeduimTasks(mediumn); 
     setLowTasks(low);
-    setMeduimTasks(meduim);
-  };
+  }, [props.data]);
 
   const markTrash = id => {
     firestore()
@@ -71,7 +96,7 @@ const Trash = () => {
       .doc(id)
       .delete()
       .then(() => {
-        getData();
+        // getData();
         console.log('Task Deleted');
         Snackbar.show({
           text: 'Todo deleted',
@@ -102,7 +127,7 @@ const Trash = () => {
           // getData();
           console.log(`Moved to ${lastLocation}`);
           Snackbar.show({
-            text: 'Todo deleted',
+            text: `Moved to ${lastLocation}`,
             duration: 500,
             action: {
               text: 'OK',

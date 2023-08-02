@@ -23,7 +23,7 @@ const Temp = props => {
         lastLocation: 'Active',
       })
       .then(() => {
-        // getData();    
+        // getData();
         console.log('Task Deleted');
         Snackbar.show({
           text: 'Moved To Trash',
@@ -98,7 +98,7 @@ const Temp = props => {
         </View>
       </View>
       <Text>bbb</Text>
-      {highTasks.length === 0 ? null : (
+      {lowTasks.length === 0 ? null : (
         <View style={[styles.TaskItems, {borderColor: 'red'}]}>
           <View
             style={{
@@ -111,7 +111,7 @@ const Temp = props => {
           </View>
           <FlatList
             scrollEnabled
-            data={highTasks}
+            data={lowTasks}
             renderItem={task => {
               return (
                 <List
@@ -150,12 +150,14 @@ const Temp = props => {
               return (
                 <View>
                   {/* <Text>{task.item.Data.Title}</Text> */}
-
-                  <List
-                    data={task.item}
-                    delete={markTrash}
-                    complete={markComplete}
-                  />
+                  {/* <View> */}
+                  {task.item.Data.Location == 'Active' ? (
+                    <List
+                      data={task.item}
+                      delete={markTrash}
+                      complete={markComplete}
+                    />
+                  ) : null}
                 </View>
               );
             }}

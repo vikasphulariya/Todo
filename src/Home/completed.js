@@ -9,11 +9,7 @@ import auth from '@react-native-firebase/auth';
 import {useIsFocused} from '@react-navigation/native';
 import Snackbar from 'react-native-snackbar';
 const theme = Darkcolors;
-const Completed = () => {
-  const temp = () => {
-    console.log('csdc');
-  };
-
+const Completed = props => {
   const markTrash = id => {
     firestore()
       .collection('Users')
@@ -25,7 +21,7 @@ const Completed = () => {
         lastLocation: 'Completed',
       })
       .then(() => {
-        getData();
+        // getData();
         console.log('Task Deleted');
         Snackbar.show({
           text: 'Moved To Trash',
@@ -51,7 +47,7 @@ const Completed = () => {
         lastLocation: 'Completed',
       })
       .then(() => {
-        getData();
+        // getData();
         console.log('Task Deleted');
         Snackbar.show({
           text: "Moved To Todo's",
@@ -66,54 +62,31 @@ const Completed = () => {
         });
       });
   };
-  const isFocused = useIsFocused();
-  useEffect(() => {
-    console.log('cd');
-    getData();
-  }, [isFocused]);
+
   const [meduimTasks, setMeduimTasks] = useState([]);
   const [highTasks, setHighTasks] = useState([]);
   const [lowTasks, setLowTasks] = useState([]);
-  const getData = () => {
-    // console.log('Completed');
-    firestore()
-      .collection('Users')
-      .doc(auth().currentUser.email)
-      .collection('Tasks')
-      .get()
-      .then(result => {
-        let low = [];
-        let high = [];
-        let meduim = [];
-        result.forEach(task => {
-          // console.log(task.data().priority)
-          if (
-            task.data().priority == 3 &&
-            task.data().Location === 'Completed'
-          ) {
-            // console.log(task.data().Title);
-            low.push({id: task.id, Data: task.data()});
-          }
-          if (
-            task.data().priority == 2 &&
-            task.data().Location === 'Completed'
-          ) {
-            // console.log(task.data().Title);
-            meduim.push({id: task.id, Data: task.data()});
-          }
-          if (
-            task.data().priority == 1 &&
-            task.data().Location === 'Completed'
-          ) {
-            // console.log(task.data().Title);
-            high.push({id: task.id, Data: task.data()});
-          }
-        });
-        setHighTasks(high);
-        setLowTasks(low);
-        setMeduimTasks(meduim);
-      });
-  };
+  useEffect(() => {
+    let k = props.data;
+    let low = [];
+    let high = [];
+    let mediumn = [];
+    k.forEach(e => {
+      if (e.Data.priority == 1) {
+        high.push(e);
+      }
+      if (e.Data.priority == 2) {
+        mediumn.push(e);
+      }
+      if (e.Data.priority == 3) {
+        low.push(e);
+      }
+    });
+    // console.log(props.data);
+    setHighTasks(high);
+    setMeduimTasks(mediumn);
+    setLowTasks(low);
+  }, [props.data]);
   return (
     <View style={{backgroundColor: theme.primaryBGColor, flex: 1}}>
       <View style={styles.searchHeader}>
