@@ -13,6 +13,7 @@ import Completed from './Home/completed';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Temp from './Home/temp';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // import {useIsFocused} from '@react-navigation/native';
 const theme = Darkcolors;
 const DashBoard = ({navigation}) => {
@@ -26,15 +27,26 @@ const DashBoard = ({navigation}) => {
 
     return () => unsubscribe();
   }, [CompletedTasks, ActiveTasks, TrashTasks]);
+  useEffect(() => {}, []);
 
+  const saveToDevice = async dataToBeSaved => {
+    try {
+      const jsonValue = JSON.stringify(dataToBeSaved);
+      await AsyncStorage.setItem('TaskData', jsonValue);
+      console.log('Saving Successfully');
+    } catch (e) {
+      // saving error
+      console.log(e);
+    }
+  };
   function onResult(querySnapshot) {
     console.log('Got Users collection result.');
-
+    saveToDevice(querySnapshot);
     getData(querySnapshot);
   }
 
   function onError(error) {
-    console.error(error);
+    console.error('ss', error);
   }
 
   const [CompletedTasks, setCompletedTasks] = useState([]);

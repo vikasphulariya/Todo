@@ -11,8 +11,10 @@ import React, {useState, useEffect} from 'react';
 import {Darkcolors} from './colors';
 import {Lightcolors} from './colors';
 import Snackbar from 'react-native-snackbar';
+import {useNavigation} from '@react-navigation/native';
 const theme = Darkcolors;
 const List = (props, {refresh, temp}) => {
+  const navigation = useNavigation();
   let k = 'done';
   const imgae = require(`../Assets/${k}.png`);
   const [imageIcon, setImageIcon] = useState(require(`../Assets/${k}.png`));
@@ -35,7 +37,15 @@ const List = (props, {refresh, temp}) => {
   return (
     <View>
       <View style={styles.ListItem}>
-        <Text style={styles.textEntry}>{dataK.Title}</Text>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Modify', {
+              data: props.data,
+            });
+          }}
+          style={{width: '75%'}}>
+          <Text style={styles.textEntry}>{dataK.Title}</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             props.complete(idK, dataK.lastLocation);

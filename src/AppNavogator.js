@@ -13,6 +13,7 @@ import Profile from './HomeLogin.js/Profile';
 import NewTask from './Helper/newTask';
 import Temp from './Helper/Temp';
 // import Home from './Home/home';
+import ModifyTask from './Helper/ModifyTask';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,18 +21,12 @@ function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator options={{statusBarColor: 'red'}}>
-
-        {/* <Stack.Screen
-          name="tEMP"
-          component={Temp}
-          options={{headerShown: false, statusBarColor: '#212832'}}
-        /> */}
         {/* <Stack.Screen
           name="Home"
           component={Home}
           options={{headerShown: false, statusBarColor: '#212832'}}
         /> */}
-        
+
         <Stack.Screen
           name="Login"
           component={Login}
@@ -60,6 +55,11 @@ function AppNavigator() {
         <Stack.Screen
           name="newTask"
           component={NewTask}
+          options={{headerShown: false, statusBarColor: '#212832'}}
+        />
+        <Stack.Screen
+          name="Modify"
+          component={ModifyTask}
           options={{headerShown: false, statusBarColor: '#212832'}}
         />
       </Stack.Navigator>
